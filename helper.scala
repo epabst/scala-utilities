@@ -4,14 +4,24 @@ import java.io._
 object helper {
   def ? (obj : AnyRef, verbose : Boolean) = {
     val objClass = obj.getClass
-    val methods = obj.getClass.getMethods
-    val publicMethods = methods.filter(m => (m.getModifiers & Modifier.PUBLIC) == Modifier.PUBLIC)
-    println (objClass.getCanonicalName + "\n------------")
+    val methods = objClass.getDeclaredMethods
+    val publicMethods = methods.filter(m => Modifier.isPublic(m.getModifiers))
+
+    val className = objClass.getCanonicalName
+
+    println (className + "\n------------")
+
     if (verbose) {
-      publicMethods.foreach(m => println (m))
+      val replacefilter = className.replaceAll("\\$", "\\\\\\$") + "\\."
+      publicMethods.foreach(m => println (m.toString.replaceAll(replacefilter, "")))
+      val publicFields = objClass.getDeclaredFields.filter(f => Modifier.isPublic(f.getModifiers))
+      println ("---Public Fields---")
+      publicFields.foreach(f => println (f))
     } else {
-      publicMethods.foreach(m => println (m.getName))
+      val names = publicMethods.map(m => m.getName).toList.removeDuplicates
+      names.foreach(name => println (name + "( )"))
     }
+
   }
 
   def ? (obj : AnyRef) : Any = {
