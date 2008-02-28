@@ -12,8 +12,7 @@ object helper {
     println (className + "\n------------")
 
     if (verbose) {
-      val replacefilter = className.replaceAll("\\$", "\\\\\\$") + "\\."
-      publicMethods.foreach(m => println (m.toString.replaceAll(replacefilter, "")))
+      publicMethods.foreach(m => println (m.toString.replaceAll(className + "\\.", "")))
       val publicFields = objClass.getDeclaredFields.filter(f => Modifier.isPublic(f.getModifiers))
       println ("---Public Fields---")
       publicFields.foreach(f => println (f))
@@ -33,6 +32,23 @@ object helper {
   }
 
   def exec (cmd : String) = {
+    val runTime = Runtime.getRuntime   
+    val process = runTime.exec (cmd)
+    val resultBuffer = new BufferedReader(new InputStreamReader(process.getInputStream))
+    var line : String = null
+
+    do {
+      line = resultBuffer.readLine
+      if (line != null) {
+        println (line)
+      }
+    } while (line != null)
+
+    process.waitFor
+    process.exitValue
+  }
+
+  def execp (cmd : String) = {
     val runTime = Runtime.getRuntime   
     val process = runTime.exec (cmd)
     val resultBuffer = new BufferedReader(new InputStreamReader(process.getInputStream))
