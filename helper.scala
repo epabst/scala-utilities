@@ -59,6 +59,7 @@ object helper {
     } while (line != null)
 
     process.waitFor
+    resultBuffer.close
     process.exitValue
   }
 
@@ -77,8 +78,29 @@ object helper {
     } while (line != null)
 
     process.waitFor
+    resultBuffer.close
 
     (process.exitValue, lineList.reverse)
+  }
+
+  def execp (cmd : String, outFile:String) = {
+    val process = if (currDir.isDefined) runTime.exec (cmd, null, currDir.get) else runTime.exec(cmd)
+    val resultBuffer = new BufferedReader(new InputStreamReader(process.getInputStream))
+    val outputWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile)))
+    var line : String = null
+
+    do {
+        line = resultBuffer.readLine
+        if (line != null) {
+            outputWriter.write(line)
+        }
+    } while (line != null)
+
+    process.waitFor
+    resultBuffer.close
+    outputWriter.close
+
+    process.exitValue
   }
 
   def cwd (dir : String) = {
