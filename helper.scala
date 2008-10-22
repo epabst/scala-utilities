@@ -85,5 +85,9 @@ object helper {
     currDir = Some(new File(dir))
   }
 
+  def exists(name : String) = {
+    (new File(name)).exists
+  }
+
   case class hex(value : Int) { override def toString = "0x" + value.toHexString }
 }
