@@ -93,6 +93,7 @@ object helper {
         line = resultBuffer.readLine
         if (line != null) {
             outputWriter.write(line)
+            outputWriter.newLine
         }
     } while (line != null)
 
