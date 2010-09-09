@@ -3,7 +3,7 @@ package scala_utilities
 import java.lang.reflect._
 import java.io._
 
-object helper {
+object Helper {
   var currDir : Option[File] = None
 
   val runTime = Runtime.getRuntime   

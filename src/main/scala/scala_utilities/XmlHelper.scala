@@ -3,7 +3,7 @@ package scala_utilities
 import xml.Node
 import java.lang.Long
 
-object xmlHelper {
+object XmlHelper {
   /** convenience function that provides implicit conversion from Node to an anonymous type
       with following members:
       <ul>
