@@ -1,3 +1,6 @@
+package com.google.code.scala_utilities
+
+import xml.Node
 
 object xmlHelper {
   /** convenience function that provides implicit conversion from Node to an anonymous type

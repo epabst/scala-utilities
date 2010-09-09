@@ -1,3 +1,5 @@
+package com.google.code.scala_utilities
+
 import java.lang.reflect._
 import java.io._
 

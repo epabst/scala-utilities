@@ -1,3 +1,5 @@
+package com.google.code.scala_utilities
+
 object Timer {
   var start:Long = 0L
   var end:Long = 0L
