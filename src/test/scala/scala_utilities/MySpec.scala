@@ -1,4 +1,4 @@
-package com.google.code.scala_utilities
+package scala_utilities
 
 import org.specs._
 import org.specs.runner.{ConsoleRunner, JUnit4}

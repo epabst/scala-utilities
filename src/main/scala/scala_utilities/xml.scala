@@ -1,4 +1,4 @@
-package com.google.code.scala_utilities
+package scala_utilities
 
 import xml.Node
 import java.lang.Long
