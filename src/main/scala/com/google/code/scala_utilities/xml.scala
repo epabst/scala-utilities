@@ -1,6 +1,7 @@
 package com.google.code.scala_utilities
 
 import xml.Node
+import java.lang.Long
 
 object xmlHelper {
   /** convenience function that provides implicit conversion from Node to an anonymous type
@@ -24,8 +25,8 @@ object xmlHelper {
     def getLabelOpt(label:String) = getChildOpt(label) map (_ text)
     def getLabel(label:String) = getChild(label) text
 
-    def getLongOpt(label:String) = getLabelOpt(label).map(Helper.parseLong(_))
-    def getLong(label:String) = Helper.parseLong(getLabel(label))
+    def getLongOpt(label:String) = getLabelOpt(label).map(Long.parseLong(_))
+    def getLong(label:String) = Long.parseLong(getLabel(label))
 
     def getBool(label:String) = getLabel(label) == "true"
     def getBoolOpt(label:String) = getLabelOpt(label) map (_ == "true")
