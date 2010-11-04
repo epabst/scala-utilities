@@ -1,6 +1,8 @@
 package scala_utilities
 
 import java.lang.reflect._
+import tools.nsc.io.Path
+import tools.nsc.io.Process
 import java.io._
 
 object Helper {
@@ -28,7 +30,7 @@ object Helper {
             showClass (inputClass.getSuperclass, verbose, indent + 1)
         }
       } else {
-        val names = publicMethods.map(m => m.getName).toList.removeDuplicates
+        val names = publicMethods.map(m => m.getName).toList.distinct
         names.foreach(name => println (indentString + name + "( )"))
       }
 
@@ -48,62 +50,46 @@ object Helper {
     ? (obj, true)
   }
 
-  def exec (cmd : String) = {
-    val process = if (currDir.isDefined) runTime.exec (cmd, null, currDir.get) else runTime.exec(cmd)
-    val resultBuffer = new BufferedReader(new InputStreamReader(process.getInputStream))
-    var line : String = null
-
-    do {
-      line = resultBuffer.readLine
-      if (line != null) {
-        println (line)
-      }
-    } while (line != null)
+  def exec (cmd : String): Int = {
+    val process = if (currDir.isDefined) Process(cmd, null, Path(currDir.get)) else Process(cmd)
+    for (line <- process.stdout) {
+      println(line)
+    }
 
     process.waitFor
-    resultBuffer.close
-    process.exitValue
+    for (line <- process.stderr) {
+      println(line)
+    }
+    process.exitValue.get
   }
 
-  def execp (cmd : String) = {
-    val process = if (currDir.isDefined) runTime.exec (cmd, null, currDir.get) else runTime.exec(cmd)
-    val resultBuffer = new BufferedReader(new InputStreamReader(process.getInputStream))
-    var line : String = null
+  def execp (cmd : String): (Int, List[String]) = {
+    val process = if (currDir.isDefined) Process(cmd, null, Path(currDir.get)) else Process(cmd)
     var lineList : List[String] = Nil
-
-
-    do {
-        line = resultBuffer.readLine
-        if (line != null) {
-            lineList = line :: lineList
-        }
-    } while (line != null)
+    for (line <- process.stdout) {
+      lineList = line :: lineList
+    }
 
     process.waitFor
-    resultBuffer.close
+    for (line <- process.stderr) {
+      lineList = line :: lineList
+    }
 
-    (process.exitValue, lineList.reverse)
+    (process.exitValue.get, lineList.reverse)
   }
 
-  def execp (cmd : String, outFile:String) = {
-    val process = if (currDir.isDefined) runTime.exec (cmd, null, currDir.get) else runTime.exec(cmd)
-    val resultBuffer = new BufferedReader(new InputStreamReader(process.getInputStream))
+  def execp (cmd : String, outFile:String): Int = {
+    val process = if (currDir.isDefined) Process(cmd, null, Path(currDir.get)) else Process(cmd)
     val outputWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile)))
-    var line : String = null
-
-    do {
-        line = resultBuffer.readLine
-        if (line != null) {
-            outputWriter.write(line)
-            outputWriter.newLine
-        }
-    } while (line != null)
+    for (line <- process.stdout) {
+      outputWriter.write(line)
+      outputWriter.newLine
+    }
 
     process.waitFor
-    resultBuffer.close
     outputWriter.close
 
-    process.exitValue
+    process.exitValue.get
   }
 
   def cwd (dir : String) = {
