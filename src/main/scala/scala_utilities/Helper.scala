@@ -53,34 +53,23 @@ object Helper {
   }
 
   private def printAllLines(inputStream: InputStream) {
-    val resultBuffer = new BufferedReader(new InputStreamReader(inputStream))
-    var line: String = null
-
-    do {
-      line = resultBuffer.readLine
-      if (line != null) {
-        println(line)
-      }
-    } while (line != null)
+    try for (line <- Source.fromInputStream(inputStream).getLines) {
+      println(line)
+    } catch { case _: IOException => () }
   }
 
   def exec (cmd : String): Int = {
     val process = if (currDir.isDefined) Process(cmd, null, Path(currDir.get)) else Process(cmd)
     val jProcess: JProcess = process.process
-    val inputStream = jProcess.getInputStream
-    printAllLines(inputStream)
+    printAllLines(jProcess.getInputStream)
 
     process.waitFor
-    inputStream.close
     process.exitValue.get
   }
 
   def execp (cmd : String): (Int, List[String]) = {
     val process = if (currDir.isDefined) Process(cmd, null, Path(currDir.get)) else Process(cmd)
-    var lineList : List[String] = Nil
-    for (line <- process.stdout) {
-      lineList = line :: lineList
-    }
+    var lineList = process.stdout.toList
 
     process.waitFor
     for (line <- process.stderr) {
