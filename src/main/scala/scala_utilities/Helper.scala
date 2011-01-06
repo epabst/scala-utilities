@@ -3,7 +3,9 @@ package scala_utilities
 import java.lang.reflect._
 import tools.nsc.io.Path
 import tools.nsc.io.Process
+import java.lang.{Process => JProcess}
 import java.io._
+import io.Source
 
 object Helper {
   var currDir : Option[File] = None
@@ -50,16 +52,26 @@ object Helper {
     ? (obj, true)
   }
 
+  private def printAllLines(inputStream: InputStream) {
+    val resultBuffer = new BufferedReader(new InputStreamReader(inputStream))
+    var line: String = null
+
+    do {
+      line = resultBuffer.readLine
+      if (line != null) {
+        println(line)
+      }
+    } while (line != null)
+  }
+
   def exec (cmd : String): Int = {
     val process = if (currDir.isDefined) Process(cmd, null, Path(currDir.get)) else Process(cmd)
-    for (line <- process.stdout) {
-      println(line)
-    }
+    val jProcess: JProcess = process.process
+    val inputStream = jProcess.getInputStream
+    printAllLines(inputStream)
 
     process.waitFor
-    for (line <- process.stderr) {
-      println(line)
-    }
+    inputStream.close
     process.exitValue.get
   }
 
