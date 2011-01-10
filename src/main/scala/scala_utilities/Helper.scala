@@ -69,14 +69,12 @@ object Helper {
 
   def execp (cmd : String): (Int, List[String]) = {
     val process = if (currDir.isDefined) Process(cmd, null, Path(currDir.get)) else Process(cmd)
-    var lineList = process.stdout.toList
+    val lineList = process.stdout.toList
 
     process.waitFor
-    for (line <- process.stderr) {
-      lineList = line :: lineList
-    }
 
-    (process.exitValue.get, lineList.reverse)
+    val errList = process.stderr.toList
+    (process.exitValue.get, lineList ::: errList)
   }
 
   def execp (cmd : String, outFile:String): Int = {

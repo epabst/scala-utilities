@@ -14,6 +14,11 @@ object HelperSpec extends Specification {
       exitCode must beEqualTo(0)
       output must beEqualTo(List("hello"))
     }
+    "command output should preserve order" in {
+      val (exitCode, output) = Helper.execp("echo \"hello\"; echo \"howdy\"; echo \"wassup\"")
+      exitCode must beEqualTo(0)
+      output must beEqualTo(List("hello", "howdy", "wassup"))
+    }
     "fail gracefully and capture stderr" in {
       val (exitCode, output) = Helper.execp("echo < foobarbaz")
       exitCode must notBe(0)
