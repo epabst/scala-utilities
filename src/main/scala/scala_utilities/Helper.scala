@@ -6,6 +6,7 @@ import tools.nsc.io.Process
 import java.lang.{Process => JProcess}
 import java.io._
 import io.Source
+import scala.Console
 
 object Helper {
   var currDir : Option[File] = None
@@ -64,6 +65,8 @@ object Helper {
     printAllLines(jProcess.getInputStream)
 
     process.waitFor
+
+    process.stderr.toList.foreach(Console.err.println)
     process.exitValue.get
   }
 
@@ -86,6 +89,10 @@ object Helper {
     }
 
     process.waitFor
+    for (line <- process.stderr) {
+      outputWriter.write(line)
+      outputWriter.newLine
+    }
     outputWriter.close
 
     process.exitValue.get

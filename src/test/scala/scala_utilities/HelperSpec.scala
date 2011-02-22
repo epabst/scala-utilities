@@ -2,6 +2,7 @@ package scala_utilities
 
 import org.specs._
 import org.specs.runner.{ConsoleRunner, JUnit4}
+import java.io.{PrintStream, ByteArrayOutputStream}
 
 class HelperSpecTest extends JUnit4(HelperSpec)
 //class MySpecSuite extends ScalaTestSuite(HelperSpec)
@@ -31,9 +32,14 @@ object HelperSpec extends Specification {
       val exitCode = Helper.exec("echo \"hello\"")
       exitCode must beEqualTo(0)
     }
-    "fail gracefully" in {
-      val exitCode = Helper.exec("echo < foobarbaz")
+    "fail gracefully and echo stderr" in {
+      val baos = new ByteArrayOutputStream();
+      val exitCode = Console.withErr(new PrintStream(baos)) {
+        Helper.exec("echo < foobarbaz")
+      }
       exitCode must notBe(0)
+      val content = baos.toString("UTF-8");
+      content must include ("foobarbaz")
     }
   }
 }
